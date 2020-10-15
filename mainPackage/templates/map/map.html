@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id='map' style='width: 800px; height: 600px;'></div>
+    <script>
+        let coordinates = []
+        $(document).ready(function(){
+            var socket = io.connect('http://' + document.domain + ':' + location.port +'/test');
+
+            socket.on('connect', function(allCoor) {
+                coordinates = allCoor
+            })
+
+            socket.on('coordinate', function(coor) {
+                marker.setLngLat([
+                    coor[0],
+                    coor[1]
+                ]);
+                marker.addTo(map);
+            });
+        });
+
+        mapboxgl.accessToken = 'pk.eyJ1Ijoic2lhbmd5aSIsImEiOiJjazF4ZnIyYnIwYXpsM2VxdDdobTFpMGFwIn0.3c1mTlDHgvsipzYhZiHnsg';
+        var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/siangyi/ckg8bxe9c0izj1asbbnsyk0b4/draft', // stylesheet location
+        center: [0.25, 0.15], // starting position [lng, lat]
+        zoom: 10, // starting zoom
+        interactive: false
+        });
+
+        let marker = new mapboxgl.Marker();
+        
+        map.on('load', function () {
+            map.addSource('route', {
+            'type': 'geojson',
+            'data': {
+            'type': 'Feature',
+            'properties': {},
+            'geometry': {
+            'type': 'LineString',
+            'coordinates': coordinates,
+            }
+            }
+            });
+            map.addLayer({
+            'id': 'route',
+            'type': 'line',
+            'source': 'route',
+            'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+            },
+            'paint': {
+            'line-color': '#888',
+            'line-width': 8
+            }
+            });
+            });
+
+
+
+            
+    </script>
+</body>
+</html>
