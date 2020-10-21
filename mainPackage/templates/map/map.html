@@ -12,13 +12,14 @@
 <body>
     <div id='map' style='width: 800px; height: 600px;'></div>
     <script>
-        let coordinates = []
+        let points = {{points}}
+        let nodes_coor = {{nodes_coor}}
         $(document).ready(function(){
             var socket = io.connect('http://' + document.domain + ':' + location.port +'/test');
 
-            socket.on('connect', function(allCoor) {
-                coordinates = allCoor
-            })
+            // socket.on('connect', function(allCoor) {
+            //     coordinates = allCoor
+            // })
 
             socket.on('coordinate', function(coor) {
                 marker.setLngLat([
@@ -32,42 +33,53 @@
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2lhbmd5aSIsImEiOiJjazF4ZnIyYnIwYXpsM2VxdDdobTFpMGFwIn0.3c1mTlDHgvsipzYhZiHnsg';
         var map = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/siangyi/ckg8bxe9c0izj1asbbnsyk0b4/draft', // stylesheet location
-        center: [0.25, 0.15], // starting position [lng, lat]
-        zoom: 10, // starting zoom
-        interactive: false
+        style: 'mapbox://styles/siangyi/ckgjoxrvl02pm1amhqkq5hj8t/draft', // stylesheet location
+        center: [1.125, 0.55], // starting position [lng, lat]
+        zoom: 7.8 // starting zoom
         });
 
         let marker = new mapboxgl.Marker();
         
         map.on('load', function () {
             map.addSource('route', {
-            'type': 'geojson',
-            'data': {
-            'type': 'Feature',
-            'properties': {},
-            'geometry': {
-            'type': 'LineString',
-            'coordinates': coordinates,
-            }
-            }
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': nodes_coor,
+                    }
+                }
             });
             map.addLayer({
-            'id': 'route',
-            'type': 'line',
-            'source': 'route',
-            'layout': {
-            'line-join': 'round',
-            'line-cap': 'round'
+                'id': 'route',
+                'type': 'line',
+                'source': 'route',
+                'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
             },
-            'paint': {
-            'line-color': '#888',
-            'line-width': 8
-            }
+                'paint': {
+                'line-color': '#888',
+                'line-width': 8
+                }
             });
-            });
+        });
 
-
+        for (let i=0; i < points.length; i++) {
+            let marker = new mapboxgl.Marker()
+            .setLngLat(points[i])
+            .addTo(map);
+        }
+            
+        // let counter = 0
+        // let coor_arr = []
+        // map.on('click', function (e) {
+        //     var coordinates = e.lngLat;
+        //     coor_arr.push(coordinates)
+        //     console.log(coor_arr) 
+        // });
 
             
     </script>
