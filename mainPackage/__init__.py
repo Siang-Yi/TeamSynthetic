@@ -70,10 +70,8 @@ def test_connect():
     # need visibility of the global thread object
     global thread
     global path
-    print(path)
     socketio.emit('connect', path, namespace='/test')
 
-    #Start the random number generator thread only if the thread has not been started before.
-    if not thread.isAlive():
-        print("Starting Thread")
-        thread = socketio.start_background_task(set_position)
+    # if not thread.isAlive():
+    #     print("Starting Thread")
+    #     thread = socketio.start_background_task(set_position)
