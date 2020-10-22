@@ -1,0 +1,38 @@
+.signUpTitle {
+  padding-top: 3%;
+  text-align: center;
+}
+
+.mdl-card {
+  margin: 3% auto;
+  width: 50%;
+}
+
+.inputs {
+  margin: 5% 20% 0% 20%;
+}
+
+.mdl-textfield {
+  width: 100%;
+  margin: 5% auto;
+  align: center;
+}
+
+#submit {
+  height: 3.5rem;
+  font-size: 0.8em;
+  width: 15%;
+  margin: 5% auto;
+}
+
+.greyTxt {
+  color: #C8C8C8;
+}
+
+.blackTxt {
+  color: black;
+}
+
+.centerTxt {
+  text-align: center;
+}
