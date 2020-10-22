@@ -18,6 +18,7 @@ from mainPackage.loginSignup import loginSignup
 from mainPackage.visitor import visitor
 app.register_blueprint(loginSignup, url_prefix="/")
 app.register_blueprint(visitor, url_prefix="/visitor")
+app.register_blueprint(map, url_prefix="/map")
 
 db.create_all()
 
