@@ -16,8 +16,10 @@ socketio = SocketIO(app)
 from mainPackage.map import map
 from mainPackage.loginSignup import loginSignup
 from mainPackage.visitor import visitor
+from mainPackage.admin import admin
 app.register_blueprint(loginSignup, url_prefix="/")
 app.register_blueprint(visitor, url_prefix="/visitor")
+app.register_blueprint(admin, url_prefix="/admin")
 
 db.create_all()
 
