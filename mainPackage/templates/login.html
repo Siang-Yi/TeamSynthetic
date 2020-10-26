@@ -6,53 +6,67 @@
   <title>Login</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+	<script src="https://kit.fontawesome.com/a81368914c.js"></script>
   <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='login-signup.css')}}">
 </head>
 
 <body>
-  <h1 class="loginTitle">Login</h1>
+  <image src="{{ url_for('static', filename='img/wave.png') }}" id="wave">
+	<div class="container">
+		<div class="img">
+      <image src="{{ url_for('static', filename='img/medical.svg') }}" >
+		</div>
+		<div class="login-content">
+			<form class="" action="" method="post">
+        <image src="{{ url_for('static', filename='img/avatar.svg') }}" >
+				<h2 class="title">Welcome</h2>
+				<!--role-->
+				<div class="mdl-textfield mdl-js-textfield">
+					<select class="mdl-textfield__input" id="role" name="role">
+						<option value="select" hidden selected>Role</option>
+						<option value="admin">Admin</option>
+						<option value="visitor">Visitor</option>
+						<option value="staff">Staff</option>
+					</select>
+				</div>
 
-  <div class="demo-card-wide mdl-card mdl-shadow--2dp">
-    <div class="inputs">
-      <form class="" action="" method="post">
-          <!--role-->
-          <div class="mdl-textfield mdl-js-textfield">
-            <select class="mdl-textfield__input" id="role" name="role">
-              <option value="select" hidden selected>Role</option>
-              <option value="admin">Admin</option>
-              <option value="visitor">Visitor</option>
-              <option value="staff">Staff</option>
-            </select>
-          </div>
+				<!-- username -->
+     		<div class="input-div one focus">
+     		   <div class="i">
+     		   		<i class="fas fa-user"></i>
+     		   </div>
+     		   <div class="div">
+     		   		<h5>Username</h5>
+     		   		<input type="text" class="input" id="username" name="username">
+     		   </div>
+     		</div>
 
-          <!-- Username -->
-          <div class="mdl-textfield mdl-js-textfield">
-            <input class="mdl-textfield__input" type="text" id="username" name="username">
-            <label class="mdl-textfield__label" for="sample1">Username</label>
-          </div>
+				<!-- password -->
+     		<div class="input-div pass">
+   		   <div class="i">
+   		    <i class="fas fa-lock"></i>
+   		   </div>
+   		   <div class="div">
+   		    <h5>Password</h5>
+   		    <input type="password" class="input" id="password" name="password">
+    	   </div>
+      	</div>
 
+	    	<a href="#">Forgot Password?</a>
+	    	<input type="submit" class="btn" id="submit" value="Login">
+	  	</form>
+		</div>
+	</div>
 
-          <!--Password-->
-          <div class="mdl-textfield mdl-js-textfield">
-            <input class="mdl-textfield__input" type="password" id="password" name="password">
-            <label class="mdl-textfield__label" for="sample1">Password</label>
-          </div>
-        </div>
-        <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="submit" value="submit" />
-      </form>
-
-
-    <p class="centerTxt">Don't have an account? <a href="signup">Sign up</a></p>
-
-    {% with messages = get_flashed_messages()%}
-      {% if messages %}
-        {% for msg in messages %}
-          <script>alert("{{msg}}")</script>
-        {% endfor%}
-      {% endif %}
-    {% endwith %}
-  </div>
+  {% with messages = get_flashed_messages()%}
+    {% if messages %}
+      {% for msg in messages %}
+        <script>alert("{{msg}}")</script>
+      {% endfor%}
+    {% endif %}
+  {% endwith %}
 
 </body>
 

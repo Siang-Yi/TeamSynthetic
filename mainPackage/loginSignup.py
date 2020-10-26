@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, request, flash, Blueprint, session
 from mainPackage.tables import Visitor, Staff
 from mainPackage import db
+import os
 from flask_sqlalchemy import sqlalchemy
 from sqlalchemy import and_
 
@@ -35,6 +36,7 @@ def home():
             return redirect(url_for("admin.admin_home"))
         else:
             flash("Username or password is wrong", "info")
+
     return render_template("login.html")
 
 @loginSignup.route("/signup", methods=["POST", "GET"])
