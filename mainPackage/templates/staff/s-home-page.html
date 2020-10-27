@@ -1,0 +1,12 @@
+{% extends "staff/s-page-temp.html"%}
+{% block headLink%}<link rel="stylesheet" href="{{url_for('static', filename='staff/s-home-page.css')}}">{% endblock %}
+{% block title %}Staff Home{% endblock%}
+{% block layoutTitle %}Home{% endblock %}
+{% block content %}
+<h1>Hello {{staff_username}}</h1>
+
+<!-- Colored FAB button with ripple -->
+<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+  <i class="material-icons">directions_run</i>
+</button>
+{% endblock %}

@@ -17,10 +17,12 @@ from mainPackage.map import map
 from mainPackage.loginSignup import loginSignup
 from mainPackage.visitor import visitor
 from mainPackage.admin import admin
+from mainPackage.staff import staff
 app.register_blueprint(loginSignup, url_prefix="/")
 app.register_blueprint(visitor, url_prefix="/visitor")
 app.register_blueprint(map, url_prefix="/map")
 app.register_blueprint(admin, url_prefix="/admin")
+app.register_blueprint(staff, url_prefix="/staff")
 
 db.create_all()
 
