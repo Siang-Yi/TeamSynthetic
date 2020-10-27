@@ -19,7 +19,7 @@
     <title>Map</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.green-light_green.min.css" />
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.green-pink.min.css" />
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     <link rel="stylesheet" href="../static/map/map.css">
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
@@ -74,13 +74,24 @@
             {% endfor %}
         </nav>
         </form>
+          
     </div>
 
     <div class="android-content mdl-layout__content">
-        <div id='map' style='width: 100%; height: 100%;'></div>       
+        <div id='map' style='width: 100%; height: 100%;'></div>
+        <form method="POST" id="floorForm">
+            <button id="changeFloor" type="submit" name="floor" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+                {% if ground_floor %}
+                    <h5 class="floorLabel">FF</h5>
+                {% else%}
+                    <h5 class="floorLabel">GF</h5>
+                {% endif %}
+            </button>
+        </form>
     </div>
 
     <script>
+
         let points = {{points}}
         let nodes_coor = {{nodes_coor}}
         console.log(nodes_coor)
@@ -100,24 +111,32 @@
             });
         });
 
-        $("#seachField").on('change', function() {
-            socket.send($("#searchField").val())
-        });
-
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2lhbmd5aSIsImEiOiJjazF4ZnIyYnIwYXpsM2VxdDdobTFpMGFwIn0.3c1mTlDHgvsipzYhZiHnsg';
         
-        
-        var bounds = [
+        var groundBounds = [
             [0, 0], // Southwest coordinates
             [2.25, 1.1] // Northeast coordinates
         ];
 
+        var firstBounds = [
+            [0, 2], // Southwest coordinates
+            [2.25, 3.1] // Northeast coordinates
+        ];
+
+        {% if ground_floor %}
+            let bound = groundBounds
+            let mapCenter = [1.125, 0.55]
+        {% else %}
+            let bound = firstBounds
+            let mapCenter = [1.125, 2.55]
+        {% endif %}
+
         var map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/siangyi/ckgjoxrvl02pm1amhqkq5hj8t/draft', // stylesheet location
-        center: [1.125, 0.55], // starting position [lng, lat]
-        zoom: 7.8, // starting zoom
-        maxBounds: bounds
+            container: 'map',
+            style: 'mapbox://styles/siangyi/ckgjoxrvl02pm1amhqkq5hj8t/draft', // stylesheet location
+            center: mapCenter, // starting position [lng, lat]
+            zoom: 7.8, // starting zoom
+            maxBounds: bound
         });
 
         let marker = new mapboxgl.Marker();
@@ -156,13 +175,13 @@
             .addTo(map);
         }
             
-        // let counter = 0
-        // let coor_arr = []
-        // map.on('click', function (e) {
-        //     var coordinates = e.lngLat;
-        //     coor_arr.push(coordinates)
-        //     console.log(coor_arr) 
-        // });
+        let counter = 0
+        let coor_arr = []
+        map.on('click', function (e) {
+            var coordinates = e.lngLat;
+            coor_arr.push(coordinates)
+            console.log(coor_arr) 
+        });
 
             
     </script>
