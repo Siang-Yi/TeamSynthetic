@@ -1,0 +1,7 @@
+.mdl-button--fab.mdl-button--colored {
+  position: fixed;
+  bottom:20px;
+  right: 20px;
+  cursor: pointer;
+  z-index: 999999;
+}
