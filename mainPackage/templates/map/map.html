@@ -68,9 +68,15 @@
         </form>
         <form method="POST" id="locationSelectForm">
         <nav class="mdl-navigation">
-            {% for name in location_names%}
+            <span class="mdl-navigation__link" href="">Ground Floor</span>
+            {% for name in location_names[0]%}
                 <button class="mdl-navigation__link" href="" type="submit" name="location" value="{{name}}">{{name}}</button>
                 <div class="android-drawer-separator"></div>
+            {% endfor %}
+            <span class="mdl-navigation__link" href="">First Floor</span>
+            {% for name in location_names[1]%}
+            <button class="mdl-navigation__link" href="" type="submit" name="location" value="{{name}}">{{name}}</button>
+            <div class="android-drawer-separator"></div>
             {% endfor %}
         </nav>
         </form>
@@ -91,23 +97,50 @@
     </div>
 
     <script>
-
+        let count = 0
         let points = {{points}}
+        let ppl_counts = {{ppl_counts}}
         let nodes_coor = {{nodes_coor}}
-        console.log(nodes_coor)
         $(document).ready(function(){
             var socket = io.connect('http://' + document.domain + ':' + location.port +'/test');
 
             // socket.on('connect', function(allCoor) {
             //     coordinates = allCoor
             // })
+            
+            marker_lst = []
+            socket.on('all_coordinates', function(receive) {
+                coordinates = receive[0]
+                ppl_counts = receive[1]
+                for (marker of marker_lst) {
+                    marker.remove()
+                }
+                marker_lst = []
+                for (coor of coordinates) {
+                    console.log(coor)
+                    let marker = new mapboxgl.Marker({color: "#00FF00"})
+                    marker.setLngLat([
+                        coor[0],
+                        coor[1]
+                    ]);
+                    marker.addTo(map);
+                    marker_lst.push(marker)
+                }
+                
+                console.log(place_lst)
+                for (let i = 0; i < place_lst.length; i++) {
+                    place_lst[i].setPopup(new mapboxgl.Popup().setHTML("<p>" + ppl_counts[i] + "</p>"))
+                }
+            });
 
             socket.on('coordinate', function(coor) {
-                marker.setLngLat([
-                    coor[0],
-                    coor[1]
-                ]);
-                marker.addTo(map);
+                console.log(coor)
+            //     marker.setLngLat([
+            //         coor[0],
+            //         coor[1]
+            //     ]);
+            //     marker.addTo(map);
+            // });
             });
         });
 
@@ -131,7 +164,7 @@
             let mapCenter = [1.125, 2.55]
         {% endif %}
 
-        var map = new mapboxgl.Map({
+        let map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/siangyi/ckgjoxrvl02pm1amhqkq5hj8t/draft', // stylesheet location
             center: mapCenter, // starting position [lng, lat]
@@ -139,7 +172,15 @@
             maxBounds: bound
         });
 
-        let marker = new mapboxgl.Marker();
+        console.log(points.length)
+        place_lst = []
+        for (let i=0; i < points.length; i++) {
+            var marker = new mapboxgl.Marker()
+            .setLngLat(points[i])
+            .setPopup(new mapboxgl.Popup().setHTML("<p>" + ppl_counts[i] + "</p>"))
+            .addTo(map);
+            place_lst.push(marker)
+        }
         
         map.on('load', function () {
             map.addSource('route', {
@@ -149,10 +190,11 @@
                     'properties': {},
                     'geometry': {
                         'type': 'LineString',
-                        'coordinates': nodes_coor,
+                        'coordinates': nodes_coor[0],
                     }
                 }
             });
+
             map.addLayer({
                 'id': 'route',
                 'type': 'line',
@@ -166,14 +208,35 @@
                 'line-width': 8
                 }
             });
+
+            map.addSource('first', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': nodes_coor[1],
+                    }
+                }
+            });
+
+            map.addLayer({
+                'id': 'first',
+                'type': 'line',
+                'source': 'first',
+                'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+                'paint': {
+                'line-color': '#888',
+                'line-width': 8
+                }
+            });
+
             map.resize();
         });
-
-        for (let i=0; i < points.length; i++) {
-            let marker = new mapboxgl.Marker()
-            .setLngLat(points[i])
-            .addTo(map);
-        }
             
         let counter = 0
         let coor_arr = []
