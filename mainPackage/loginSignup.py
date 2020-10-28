@@ -70,7 +70,7 @@ def signup():
             flash("Invalid password")
             invalidInput = True
         if invalidInput:
-            return render_template("signup.html", emailText = email, firstNameText = firstName, lastNameText = lastName, studentIdText = studentId, usernameText = username)
+            return render_template("signup.html", emailText = email, firstNameText = firstName, lastNameText = lastName, usernameText = username)
 
         visitor = Visitor(email, firstName, lastName, username, password)
         try:
