@@ -1,12 +1,68 @@
 {% extends "staff/s-page-temp.html"%}
-{% block headLink%}<link rel="stylesheet" href="{{url_for('static', filename='staff/s-home-page.css')}}">{% endblock %}
+{% block headLink%}
+<link rel="stylesheet" href="{{url_for('static', filename='staff/s-home-page.css')}}">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+{% endblock %}
 {% block title %}Staff Home{% endblock%}
 {% block layoutTitle %}Home{% endblock %}
 {% block content %}
 <h1>Hello {{staff_username}}</h1>
 
 <!-- Colored FAB button with ripple -->
-<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" id="helpButton">
   <i class="material-icons">directions_run</i>
 </button>
+<dialog class="mdl-dialog" id="helpDialog">
+  <div class="mdl-w3-bar">
+    <a class="mdl-navigation__link w3-right close" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">close</i></a>
+  </div>
+  <h4 class="mdl-dialog__title">Request Help</h4>
+  <div class="mdl-dialog__content">
+    <ul class="demo-list-three mdl-list">
+      <li class="mdl-list__item mdl-list__item--three-line">
+        <span class="mdl-list__item-primary-content">
+          <i class="material-icons mdl-list__item-avatar">person</i>
+          <span>Nurse 1</span>
+          <span class="mdl-list__item-text-body">
+            Requesting physiologist at block B, floor 5, ward 1
+          </span>
+        </span>
+        <span class="mdl-list__item-secondary-content">
+          <span id="datetime"></span>
+        </span>
+      </li>
+    </ul>
+    <hr>
+    <form action="">
+      <div class="mdl-textfield mdl-js-textfield">
+        <div class="box">
+          <input class="mdl-textfield__input" type="text" id="sample1" name="comment" required>
+          <label class="mdl-textfield__label" for="sample1">Comment...</label>
+        </div>
+        <button type="submit" class="submitButton" name="formButton">
+          <i class="material-icons">send</i>
+        </button>
+      </div>
+    </form>
+  </div>
+</dialog>
+<script>
+  let dt = new Date();
+  document.getElementById("datetime").innerHTML = dt.toLocaleString();
+
+  let helpDialog = document.querySelector('#helpDialog')
+  let helpButton = document.querySelector('#helpButton')
+
+  if (! helpDialog.showModal) {
+    dialogPolyfill.registerDialog(helpDialog);
+  }
+
+  helpButton.addEventListener('click', function() { //Add onclick for details button to display dialog
+    helpDialog.showModal();
+  });
+
+  helpDialog.querySelector('.close').addEventListener('click', function() {
+    helpDialog.close();
+  });
+</script>
 {% endblock %}

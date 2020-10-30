@@ -1,7 +1,72 @@
-.mdl-button--fab.mdl-button--colored {
+#helpButton{
   position: fixed;
   bottom:20px;
   right: 20px;
   cursor: pointer;
   z-index: 999999;
+}
+
+.title {
+  padding-top: 3%;
+  text-align: center;
+}
+
+.mdl-card{
+  width: 80%;
+  margin: 2% auto;
+}
+
+.mdl-data-table {
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2%;
+  margin-bottom: 5%;
+}
+
+.mdl-dialog {
+  width:40%;
+  text-align: left;
+  height: 60%;
+  overflow: auto;
+}
+
+.mdl-textfield {
+  width: 100%;
+}
+
+.box {
+  width:90%;
+  margin-right: 0;
+  border-radius: 16px;
+  background-color: #f0f2f5;
+  display: inline-block;
+}
+
+.mdl-textfield__input {
+  width: 95%;
+  margin: auto;
+  border-bottom: inherit;
+}
+
+.mdl-textfield__label {
+  width: 95%;
+  margin: auto;
+}
+
+.mdl-textfield__label:after {
+  background-color: inherit;
+}
+
+.mdl-textfield.is-invalid .mdl-textfield__label:after {
+    background-color: inherit;
+}
+
+@media screen and (max-width: 900px){
+  .mdl-dialog {
+    width: 90%;
+    text-align: left;
+    height: 60%;
+    overflow: auto;
+  }
 }
