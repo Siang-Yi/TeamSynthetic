@@ -1,12 +1,14 @@
 from math import inf
 
 class Graph:
-    def __init__(self, total_vertices):
+    def __init__(self, total_vertices, floor):
         self.vertices = [None] * total_vertices
         self.matrix = None
         for i in range(total_vertices):
             self.vertices[i] = Vertex(i)
+            self.vertices[i].floor = floor
         self.locations = None
+        self.floor = floor
 
     def add_edges(self, argv_edges):
         for edge in argv_edges:
@@ -69,6 +71,8 @@ class Graph:
     
     def add_locations(self, locations):
         self.locations = locations
+        for vertex_id in locations[self.floor].values():
+            self.vertices[vertex_id].in_room = True
 
     def get_vertex(self, name, ground_floor):
         if ground_floor:
@@ -106,6 +110,8 @@ class Vertex:
         self.visited = False
         self.distance = 0
         self.edges = []
+        self.floor = None
+        self.in_room = False
 
     def add_edge(self, edge):
         self.edges.append(edge)
@@ -503,7 +509,84 @@ all_floor_locations = [{"Main Lobby": 0,
                         "Storage": 47,
                         "Elevator": 67}]
 
-ground_floor_graph = Graph(77)
+all_floor_locations_area = [{"Main Lobby": [[0.22598442355946702, 1.0628906250011028], [0.053719376611439884, 1.3218750000001478]],
+                        "Waiting Room": [[0.20371895524260708, 0.6585937500009607], [0.024422508742389937, 0.9890625000004718]],
+                        "Reception": [[0.33848304060771284, 1.0464843750003183], [0.24824985774786512, 1.3218750000001478]],
+                        "Dialysis G-1": [[0.4205124842290502, 0.6996093749999659], [0.311530349484471, 0.9164062499999943]],
+                        "Dialysis G-2": [[0.5306649224150419, 0.6972656249998863], [0.4216843275792712, 0.9187500000000739]],
+                        "Pharmacy Pick Up": [[0.25528103986268036, 0.4101562500009095], [0.09121934594632819, 0.5472656250000512]],
+                        "Pharmacy": [[0.4228561707530787, 0.4113281250009493], [0.2658278057920427, 0.5472656250000512]],
+                        "Nurse Office G-1": [[0.25645290317756064, 0.2753906250003979], [0.08887559884091445, 0.4078125000008015]],
+                        "Nurse Office G-2": [[0.41934064070298405, 0.27187500000019327], [0.25879662948503324, 0.4101562500009095]],
+                        "Emergency Ward 1": [[0.3502015789538575, 4.831690603168681e-13], [0.1486410927492301, 0.16523437500100613]],
+                        "Doctor's Office G-1": [[0.645502603867115, 0.2753906250003979], [0.5341803956267341, 0.5472656250000512]],
+                        "Doctor's Office G-2": [[0.7603376921552467, 0.2753906250003979], [0.6466744043622015, 0.5460937500000114]],
+                        "Emergency Ward 2": [[0.7767424661874429, 0.003515625000630962], [0.6056612295896997, 0.16523437500100613]],
+                        "Emergency Ward 3": [[0.9407864823073879, 0.005859375000767386], [0.7802577666696919, 0.16406250000096634]],
+                        "Emergency Ward 4": [[1.0743595457294788, 0.007031250000835598], [0.9443016316190409, 0.16289062500089813]],
+                        "Surgery G-1": [[1.0708445367456392, 0.2765625000004377], [0.877513201915022, 0.4945312500005059]],
+                        "Surgery G-2": [[1.0743595457294788, 0.4910156250003581], [0.8739979875775248, 0.7101562500004661]],
+                        "Consult RM. 1": [[0.25293731291303345, 1.3699218750009834], [0.09004747241246491, 1.5375000000001648]],
+                        "Consult RM. 2": [[0.25293731291303345, 1.533984375000017], [0.08653185158678411, 1.7027343750006878]],
+                        "Consult RM. 3": [[0.2541091764410197, 1.7015625000006196], [0.08653185158678411, 1.8667968750011426]],
+                        "Consult RM. 4": [[0.25645290317756064, 1.8632812500009948], [0.09239121944202111, 2.034375000000267]],
+                        "X-Ray RM. G-1": [[0.25645290317756064, 2.0320312500001876], [0.09004747241246491, 2.1421875000010004]],
+                        "ATM Machines": [[0.4744170883267742, 1.8328125000009834], [0.3783260102795083, 1.9933593749997556]],
+                        "Retail 2": [[0.5142593545588454, 2.0859374999997726], [0.3689512096311063, 2.244140624999943]],
+                        "Retail 1": [[0.6724539459471259, 2.0882812499999375], [0.516603009722516, 2.248828125000159]], 
+                        "Convenience Store": [[0.6466744043622015, 1.8316406250009436], [0.48027625997441703, 1.9921875000011937]],
+                        "Florist": [[0.7603376921552467, 1.8292968750007788], [0.6490180045402667, 1.9933593749997556]],
+                        "Surgery G-4": [[1.075531214492699, 1.839843749999858], [0.8763414641688598, 2.0882812499999375]],
+                        "Surgery G-3": [[1.0743595457294788, 1.5890625000011198], [0.877513201915022, 1.8410156249998977]],
+                        "Pre-Op RM. G-2": [[1.0720162068554089, 1.4261718750007049], [0.8786849392940752, 1.592578124999818]],
+                        "Pre-Op RM. G-1": [[1.075531214492699, 1.2621093750002785], [0.8739979875775248, 1.425000000000665]],
+                        "W.Restroom": [[1.0743595457294788, 0.9585937500005173], [0.9349278922556294, 1.2058593750005286]],
+                        "M.Restroom": [[1.075531214492699, 0.7125000000006025], [0.9314127335282052, 0.9609375000006537]],
+                        "Cafeteria": [[0.851734887584044, 0.7441406250005969], [0.604489419935959, 1.1390625000003354]],
+                        "Admin Office": [[0.7673683173087937, 1.2597656250001705], [0.5330085714456487, 1.425000000000665]],
+                        "Elevator": [[0.7591659201802656, 1.533984375000017], [0.3701230602575407, 1.8246093750005343]]},  # ground floor
+                        {"Janitor": 2,
+                        "Patient RM.A5": 4,
+                        "Patient RM.A6": 6,
+                        "Patient RM.A7": 9,
+                        "Patient RM.A8": 12,
+                        "Patient RM.A9": 15,
+                        "Patient RM.A1": 7,
+                        "Patient RM.A2": 10,
+                        "Patient RM.A3": 13,
+                        "Patient RM.A4": 16,
+                        "Electrical": 18,
+                        "Patient RM.B1": 30,
+                        "Patient RM.B2": 27,
+                        "Patient RM.B3": 24,
+                        "Patient RM.B4": 21,
+                        "Med Storage Records": 22,
+                        "Nurse Office 1-2": 25,
+                        "Nurse Office 1-1": 28,
+                        "Staff Break Room": 31,
+                        "M.Restroom": 36,
+                        "W.Restroom": 34,
+                        "Conference Room": 38,
+                        "Doctor's Office 1-1": 40,
+                        "Doctor's Office 1-2": 42,
+                        "Patient RM.D1": 66,
+                        "Patient RM.D2": 64,
+                        "Patient RM.D3": 62,
+                        "Patient RM.D4": 59,
+                        "Office 1-3": 61,
+                        "Office 1-4": 50,
+                        "Office 1-5": 58,
+                        "Office 1-6": 53,
+                        "Patient RM.D6": 52,
+                        "Patient RM.D5": 49,
+                        "Storage": 47,
+                        "Elevator": 67}]
+
+
+# for key, item in all_floor_locations_area[0].items():
+#     print(item)
+
+ground_floor_graph = Graph(77, 0)
 for i in range(len(ground_vertices_coor)):
     ground_floor_graph.vertices[i].coor = ground_vertices_coor[i]
 
@@ -511,7 +594,7 @@ ground_floor_graph.add_edges(groud_floor_edges)
 ground_floor_graph.floyd_warshall()
 ground_floor_graph.add_locations(all_floor_locations)
 
-first_floor_graph = Graph(68)
+first_floor_graph = Graph(68, 1)
 for i in range(len(first_vertices_coor)):
     first_floor_graph.vertices[i].coor = first_vertices_coor[i]
 

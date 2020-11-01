@@ -97,10 +97,10 @@
     </div>
 
     <script>
-        let count = 0
-        let points = {{points}}
-        let ppl_counts = {{ppl_counts}}
-        let nodes_coor = {{nodes_coor}}
+        let count = 0;
+        let points = {{points}};
+        let ppl_counts = {{ppl_counts}};
+        let nodes_coor = {{nodes_coor}};
         $(document).ready(function(){
             var socket = io.connect('http://' + document.domain + ':' + location.port +'/test');
 
@@ -112,29 +112,40 @@
             socket.on('all_coordinates', function(receive) {
                 coordinates = receive[0]
                 ppl_counts = receive[1]
+                area_arr = receive[2]
+
                 for (marker of marker_lst) {
                     marker.remove()
                 }
+
                 marker_lst = []
                 for (coor of coordinates) {
-                    console.log(coor)
                     let marker = new mapboxgl.Marker({color: "#00FF00"})
-                    marker.setLngLat([
-                        coor[0],
-                        coor[1]
-                    ]);
+                    marker.setLngLat(coor);
                     marker.addTo(map);
                     marker_lst.push(marker)
                 }
                 
-                console.log(place_lst)
+                let counter = 0;
+                let setText = 0;
+                for (coor of area_arr) {
+                    if (counter == 2) {
+                        setText += 1;
+                        counter = 0;
+                    }
+                    let marker = new mapboxgl.Marker({color: "#FFC0CB"})
+                    marker.setLngLat(coor);
+                    marker.addTo(map);
+                    marker.setPopup(new mapboxgl.Popup().setHTML(setText))
+                    counter += 1
+                }
+
                 for (let i = 0; i < place_lst.length; i++) {
                     place_lst[i].setPopup(new mapboxgl.Popup().setHTML("<p>" + ppl_counts[i] + "</p>"))
                 }
             });
 
             socket.on('coordinate', function(coor) {
-                console.log(coor)
             //     marker.setLngLat([
             //         coor[0],
             //         coor[1]
@@ -157,11 +168,11 @@
         ];
 
         {% if ground_floor %}
-            let bound = groundBounds
-            let mapCenter = [1.125, 0.55]
+            let bound = groundBounds;
+            let mapCenter = [1.125, 0.55];
         {% else %}
-            let bound = firstBounds
-            let mapCenter = [1.125, 2.55]
+            let bound = firstBounds;
+            let mapCenter = [1.125, 2.55];
         {% endif %}
 
         let map = new mapboxgl.Map({
@@ -172,14 +183,13 @@
             maxBounds: bound
         });
 
-        console.log(points.length)
-        place_lst = []
+        place_lst = [];
         for (let i=0; i < points.length; i++) {
             var marker = new mapboxgl.Marker()
             .setLngLat(points[i])
             .setPopup(new mapboxgl.Popup().setHTML("<p>" + ppl_counts[i] + "</p>"))
             .addTo(map);
-            place_lst.push(marker)
+            place_lst.push(marker);
         }
         
         map.on('load', function () {
@@ -238,14 +248,24 @@
             map.resize();
         });
             
-        let counter = 0
-        let coor_arr = []
-        map.on('click', function (e) {
-            var coordinates = e.lngLat;
-            coor_arr.push(coordinates)
-            console.log(coor_arr) 
-        });
+        // let coor_arr = []
+        // map.on('click', function (e) {
+        //     var coordinates = e.lngLat;
+        //     coor_arr.push(coordinates)
+        //     console.log(coor_arr) 
+        // });
 
+        // let temp = [];
+        // let final_arr = [];
+        // map.on('click', function (e) {
+        //     var coordinates = e.lngLat;
+        //     temp.push([coordinates.lat, coordinates.lng])
+        //     if (temp.length == 2) {
+        //         final_arr.push([temp]);
+        //         temp = [];
+        //     }
+        //     console.log(final_arr)
+        // });
             
     </script>
 </body>

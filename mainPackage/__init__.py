@@ -20,7 +20,7 @@ from mainPackage.visitor import visitor
 from mainPackage.admin import admin
 from mainPackage.staff import staff
 from mainPackage.tables import *
-from mainPackage.graph import ground_floor_graph, first_floor_graph
+from mainPackage.graph import ground_floor_graph, first_floor_graph, all_floor_locations_area
 app.register_blueprint(loginSignup, url_prefix="/")
 app.register_blueprint(visitor, url_prefix="/visitor")
 app.register_blueprint(map, url_prefix="/map")
@@ -57,21 +57,42 @@ def set_all_position():
         for coor in coordinates:
             lat = coor.lat
             lng = coor.lng
-            coors.append([lat, lng])
+            coors.append([lng, lat])
             min_dist = inf
             min_vertex = None
             all_vertices = ground_floor_graph.vertices + first_floor_graph.vertices
-            for vertex in all_vertices:
-                dist = sqrt((vertex.coor[0] - lat)**2 + (vertex.coor[1] - lng) ** 2)
-                if dist < min_dist:
-                    min_dist = dist
-                    min_vertex = vertex
+
+            in_room = False
+            for key, item in all_floor_locations_area[0].items():
+                top_left = item[0]
+                bottom_right = item[1]
+                if lat < top_left[0] and lat > bottom_right[0] and lng > top_left[1] and lng < bottom_right[1]:
+                    vertex_number = ground_floor_graph.locations[0][key]
+                    min_vertex = ground_floor_graph.vertices[vertex_number]
+                    in_room = True
+                    break
+            
+            if not in_room:
+                for vertex in all_vertices:
+                    if vertex.in_room == False:
+                        dist = sqrt((vertex.coor[1] - lat)**2 + (vertex.coor[0] - lng) ** 2)
+                        if dist < min_dist:
+                            min_dist = dist
+                            min_vertex = vertex
+                print(min_vertex.floor, min_vertex.id, min_vertex.coor, [lng, lat])
+
             min_vertex.ppl_count += 1
         ppl_counts = []
         for vertex in all_vertices:
             ppl_counts.append(vertex.ppl_count)
-        socketio.emit('all_coordinates', [coors, ppl_counts], namespace='/test')
-        socketio.sleep(10)
+
+        area_arr = []
+        for pair in all_floor_locations_area[0].values():
+                for coor in pair:
+                    area_arr.append([coor[1], coor[0]])
+
+        socketio.emit('all_coordinates', [coors, ppl_counts, area_arr], namespace='/test')
+        socketio.sleep(6)
 
 @socketio.on('connect', namespace='/test')
 def test_connect():
