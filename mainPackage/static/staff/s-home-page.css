@@ -62,22 +62,31 @@
     background-color: inherit;
 }
 
-div .item {
-    vertical-align: top;
-    display: inline-block;
-    text-align: center;
-    margin-right: 3%
+.item {
+  text-align: center;
+  padding-right: 3%
+}
+
+#callForHelp {
+  padding: 0px;
+}
+
+.mdl-w3-bar {
+  width: 100%;
+  text-align: center;
 }
 
 .iconLabel {
     display: block;
 }
 
+
 @media screen and (max-width: 900px){
   .mdl-dialog {
     width: 90%;
     text-align: left;
-    height: 60%;
+    height: 80%;
     overflow: auto;
   }
+
 }
