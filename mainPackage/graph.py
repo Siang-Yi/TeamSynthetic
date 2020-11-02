@@ -1,4 +1,4 @@
-from math import inf
+from math import inf, sqrt
 
 class Graph:
     def __init__(self, total_vertices, floor):
@@ -9,8 +9,12 @@ class Graph:
             self.vertices[i].floor = floor
         self.locations = None
         self.floor = floor
+        self.user_coor = None
+        self.all_floor_locations_area = None
 
     def add_edges(self, argv_edges):
+        for vertex in self.vertices:
+            vertex.edges = []
         for edge in argv_edges:
             u, v, w = edge
             current_edge = Edge(u, v, w)
@@ -24,9 +28,7 @@ class Graph:
         self.matrix = [[[inf, None] for i in range(len(self.vertices))] for j in range(len(self.vertices))]
         for vertex in self.vertices:
             for edge in vertex.edges:
-                self.matrix[edge.u][edge.v][0] = edge.w
-                self.matrix[edge.v][edge.u][0] = edge.w
-        
+                self.matrix[edge.u][edge.v][0] = edge.w        
 
     def floyd_warshall(self):
         self.generate_matrix()
@@ -93,6 +95,37 @@ class Graph:
         name_lst.append(list(self.locations[1].keys()))
         name_lst[1].sort()
         return name_lst
+
+    def add_people(self, vertex_index):
+        for edge in self.vertices[vertex_index].edges:
+            u, v = edge.u, edge.v
+            for v_edge in self.vertices[v].edges:
+                if v_edge.v == u:
+                    v_edge.w += 100
+
+    def user_nearest_node(self):
+        in_room = False
+        lng = self.user_coor[0]
+        lat = self.user_coor[1]
+        min_dist = inf
+        for key, item in self.all_floor_locations_area[self.floor].items():
+            top_left = item[0]
+            bottom_right = item[1]
+            if lat < top_left[0] and lat > bottom_right[0] and lng > top_left[1] and lng < bottom_right[1]:
+                vertex_number = self.locations[self.floor][key]
+                min_vertex = self.vertices[vertex_number]
+                in_room = True
+                break
+                    
+        if not in_room:
+            for vertex in self.vertices:
+                if vertex.in_room == False:
+                    dist = sqrt((vertex.coor[1] - lat)**2 + (vertex.coor[0] - lng) ** 2)
+                    if dist < min_dist:
+                        min_dist = dist
+                        min_vertex = vertex
+
+        return min_vertex.id
 
     def __str__(self):
         return_string = ""
@@ -218,7 +251,8 @@ groud_floor_edges = [[0, 1, 15],
         [72, 73, 10],
         [36, 74, 20],
         [74, 75, 15],
-        [63, 76, 10]]
+        [63, 76, 10],
+        [74, 61, 15]]
 
 first_floor_edges = [[0, 1, 20],
                     [1, 2, 5],
@@ -350,7 +384,7 @@ ground_vertices_coor = [[1.1691699196565253, 0.07675928484549388],  #0
 [1.8972656249993918, 0.9280844123026242],
 [1.664062499998579, 0.8191127216282581],
 [1.6664062499987153, 0.9292561333739684],  # 60
-[1.5222656249991644, 0.8226279858258181],
+[1.4800781250000625, 0.8277140302953683],
 [1.5410156249986073, 0.9269126908430962],
 [1.3804687499983572, 0.820284476704046],
 [1.3804687499983572, 0.9210540777415304],
@@ -507,9 +541,10 @@ all_floor_locations = [{"Main Lobby": 0,
                         "Patient RM.D6": 52,
                         "Patient RM.D5": 49,
                         "Storage": 47,
-                        "Elevator": 67}]
+                        "Elevator": 67,
+                        "Medical Assistant Area": 44}]
 
-all_floor_locations_area = [{"Main Lobby": [[0.22598442355946702, 1.0628906250011028], [0.053719376611439884, 1.3218750000001478]],
+all_floor_locations_area = [{"Main Lobby": [[0.20371895524260708, 0.9867187500004206], [0.0035156249977461584, 1.375781249999278]],
                         "Waiting Room": [[0.20371895524260708, 0.6585937500009607], [0.024422508742389937, 0.9890625000004718]],
                         "Reception": [[0.33848304060771284, 1.0464843750003183], [0.24824985774786512, 1.3218750000001478]],
                         "Dialysis G-1": [[0.4205124842290502, 0.6996093749999659], [0.311530349484471, 0.9164062499999943]],
@@ -545,59 +580,54 @@ all_floor_locations_area = [{"Main Lobby": [[0.22598442355946702, 1.062890625001
                         "Cafeteria": [[0.851734887584044, 0.7441406250005969], [0.604489419935959, 1.1390625000003354]],
                         "Admin Office": [[0.7673683173087937, 1.2597656250001705], [0.5330085714456487, 1.425000000000665]],
                         "Elevator": [[0.7591659201802656, 1.533984375000017], [0.3701230602575407, 1.8246093750005343]]},  # ground floor
-                        {"Janitor": 2,
-                        "Patient RM.A5": 4,
-                        "Patient RM.A6": 6,
-                        "Patient RM.A7": 9,
-                        "Patient RM.A8": 12,
-                        "Patient RM.A9": 15,
-                        "Patient RM.A1": 7,
-                        "Patient RM.A2": 10,
-                        "Patient RM.A3": 13,
-                        "Patient RM.A4": 16,
-                        "Electrical": 18,
-                        "Patient RM.B1": 30,
-                        "Patient RM.B2": 27,
-                        "Patient RM.B3": 24,
-                        "Patient RM.B4": 21,
-                        "Med Storage Records": 22,
-                        "Nurse Office 1-2": 25,
-                        "Nurse Office 1-1": 28,
-                        "Staff Break Room": 31,
-                        "M.Restroom": 36,
-                        "W.Restroom": 34,
-                        "Conference Room": 38,
-                        "Doctor's Office 1-1": 40,
-                        "Doctor's Office 1-2": 42,
-                        "Patient RM.D1": 66,
-                        "Patient RM.D2": 64,
-                        "Patient RM.D3": 62,
-                        "Patient RM.D4": 59,
-                        "Office 1-3": 61,
-                        "Office 1-4": 50,
-                        "Office 1-5": 58,
-                        "Office 1-6": 53,
-                        "Patient RM.D6": 52,
-                        "Patient RM.D5": 49,
-                        "Storage": 47,
-                        "Elevator": 67}]
-
-
-# for key, item in all_floor_locations_area[0].items():
-#     print(item)
+                        {"Janitor": [[2.0892462890793837, 0.21914062500124487], [2.0070269516861003, 0.3832031250016996]],
+                        "Patient RM.A5": [[2.313839592446314, 0.0011718750011198154], [2.1499016049193784, 0.2484375000011596]],
+                        "Patient RM.A6": [[2.4871248308858327, 0.005859375001392664], [2.3185232628574397, 0.2472656250010914]],
+                        "Patient RM.A7": [[2.6498517557698307, 0.0023437500011880275], [2.4871248308858327, 0.2449218750009834]],
+                        "Patient RM.A8": [[2.8137277565488006, 0.009375000001540457], [2.6545342346705496, 0.2472656250010914]],
+                        "Patient RM.A9": [[2.976410430546352, 0.004687500001267608], [2.8125572937684495, 0.2449218750009834]],
+                        "Patient RM.A1": [[2.485499291359204, 0.38554687500055707], [2.314555686708303, 0.6304687500004604]],
+                        "Patient RM.A2": [[2.6505676680065875, 0.3820312500004093], [2.4878408343497114, 0.6339843749991871]],
+                        "Patient RM.A3": [[2.8121026457768465, 0.38320312500044906], [2.64939704618979, 0.6328125000005969]],
+                        "Patient RM.A4": [[2.975955848284272, 0.38320312500044906], [2.8156140319615446, 0.6316406250005571]],
+                        "Electrical": [[3.0882983337603065, 0.0011718749999545253], [2.9806370168201965, 0.24609374999982947]],
+                        "Patient RM.B1": [[2.4831577442148784, 0.6328125000005969], [2.319239354751417, 0.8753906250003638]],
+                        "Patient RM.B2": [[2.6540795268102215, 0.6292968750004206], [2.4831577442148784, 0.876562500000432]],
+                        "Patient RM.B3": [[2.813273109013565, 0.6316406250005571], [2.648226423266266, 0.8789062500005684]],
+                        "Patient RM.B4": [[2.9794667265519763, 0.6304687500004604], [2.813273109013565, 0.876562500000432]],
+                        "Med Storage Records": [[2.9771261422835096, 1.0136718749996305], [2.8156140319615446, 1.265624999999858]],
+                        "Nurse Office 1-2": [[2.810932181365601, 1.0136718749996305], [2.6505676680065875, 1.2597656249995737]],
+                        "Nurse Office 1-1": [[2.645885174100883, 1.016015624999767], [2.485499291359204, 1.264453124999818]],
+                        "Staff Break Room": [[2.480816192920628, 1.0171874999998067], [2.3215811829600597, 1.2621093749996533]],
+                        "M.Restroom": [[2.2056561075324055, 0.38554687500055707], [2.0011711607058373, 0.6304687500016541]],
+                        "W.Restroom": [[2.2061109664471132, 0.6281250000015746], [2.0011711607058373, 0.8742187500014893]],
+                        "Conference Room": [[2.202597943023804, 1.0136718750008242], [2.0011711607058373, 1.2597656250007674]],
+                        "Doctor's Office 1-1": [[2.203768951752707, 1.2562500000006196], [2.0058557951658855, 1.42734375000137]],
+                        "Doctor's Office 1-2": [[2.204939959560619, 1.4250000000012903], [2.0046846378073298, 1.5925781250004434]],
+                        "Patient RM.D1": [[2.259976278655259, 1.5914062500004036], [2.0035134796107315, 1.7578125000009663]],
+                        "Patient RM.D2": [[2.2611472416813285, 1.7566406250008697], [2.0023423205767585, 1.9207031250013245]],
+                        "Patient RM.D3": [[2.25880531468475, 1.9230468750014609], [2.0292787656180735, 2.0824218750016144]],
+                        "Patient RM.D4": [[2.259976278655259, 2.0859375000004263], [2.0292787656180735, 2.241796875000432]],
+                        "Office 1-3": [[2.569076233548941, 1.8316406250014836], [2.3770678249466926, 1.9945312500004775]],
+                        "Office 1-4": [[2.764567313967973, 1.8316406250014836], [2.570246930169702, 1.9910156250017508]],
+                        "Office 1-5": [[2.570246930169702, 1.9910156250017508], [2.3770678249466926, 2.138671875001421]],
+                        "Office 1-6": [[2.761055775413311, 1.9910156250017508], [2.567905535854919, 2.142187500001569]],
+                        "Patient RM.D6": [[3.092979015756299, 1.9218750000002558], [2.849556884142814, 2.0882812499993406]],
+                        "Patient RM.D5": [[3.0882983337603065, 1.7578124999997726], [2.849556884142814, 1.9265625000004434]],
+                        "Storage": [[3.089468506194649, 1.4273437500001762], [2.8507273095384704, 1.7601562499998806]],
+                        "Elevator": [[2.7617716219833994, 1.5410156249997158], [2.3766130203342044, 1.8292968750002103]],
+                        "Medical Assistant Area": [[2.811627193702236, 1.2632812500009436], [2.3000289482218506, 1.533984375000557]]}]
 
 ground_floor_graph = Graph(77, 0)
 for i in range(len(ground_vertices_coor)):
     ground_floor_graph.vertices[i].coor = ground_vertices_coor[i]
 
-ground_floor_graph.add_edges(groud_floor_edges)
-ground_floor_graph.floyd_warshall()
 ground_floor_graph.add_locations(all_floor_locations)
+ground_floor_graph.all_floor_locations_area = all_floor_locations_area
 
 first_floor_graph = Graph(68, 1)
 for i in range(len(first_vertices_coor)):
     first_floor_graph.vertices[i].coor = first_vertices_coor[i]
 
-first_floor_graph.add_edges(first_floor_edges)
-first_floor_graph.floyd_warshall()
 first_floor_graph.add_locations(all_floor_locations)
+first_floor_graph.all_floor_locations_area = all_floor_locations_area

@@ -103,16 +103,11 @@
         let nodes_coor = {{nodes_coor}};
         $(document).ready(function(){
             var socket = io.connect('http://' + document.domain + ':' + location.port +'/test');
-
-            // socket.on('connect', function(allCoor) {
-            //     coordinates = allCoor
-            // })
             
             marker_lst = []
             socket.on('all_coordinates', function(receive) {
                 coordinates = receive[0]
                 ppl_counts = receive[1]
-                area_arr = receive[2]
 
                 for (marker of marker_lst) {
                     marker.remove()
@@ -126,19 +121,19 @@
                     marker_lst.push(marker)
                 }
                 
-                let counter = 0;
-                let setText = 0;
-                for (coor of area_arr) {
-                    if (counter == 2) {
-                        setText += 1;
-                        counter = 0;
-                    }
-                    let marker = new mapboxgl.Marker({color: "#FFC0CB"})
-                    marker.setLngLat(coor);
-                    marker.addTo(map);
-                    marker.setPopup(new mapboxgl.Popup().setHTML(setText))
-                    counter += 1
-                }
+                // let counter = 0;
+                // let setText = 0;
+                // for (coor of area_arr) {
+                //     if (counter == 2) {
+                //         setText += 1;
+                //         counter = 0;
+                //     }
+                //     let marker = new mapboxgl.Marker({color: "#FFC0CB"})
+                //     marker.setLngLat(coor);
+                //     marker.addTo(map);
+                //     marker.setPopup(new mapboxgl.Popup().setHTML(setText))
+                //     counter += 1
+                // }
 
                 for (let i = 0; i < place_lst.length; i++) {
                     place_lst[i].setPopup(new mapboxgl.Popup().setHTML("<p>" + ppl_counts[i] + "</p>"))
@@ -146,12 +141,10 @@
             });
 
             socket.on('coordinate', function(coor) {
-            //     marker.setLngLat([
-            //         coor[0],
-            //         coor[1]
-            //     ]);
-            //     marker.addTo(map);
-            // });
+                console.log("chg")
+                let marker = new mapboxgl.Marker({color: "#8A2BE2"})
+                marker.setLngLat(coor);
+                marker.addTo(map);
             });
         });
 
@@ -255,17 +248,17 @@
         //     console.log(coor_arr) 
         // });
 
-        // let temp = [];
-        // let final_arr = [];
-        // map.on('click', function (e) {
-        //     var coordinates = e.lngLat;
-        //     temp.push([coordinates.lat, coordinates.lng])
-        //     if (temp.length == 2) {
-        //         final_arr.push([temp]);
-        //         temp = [];
-        //     }
-        //     console.log(final_arr)
-        // });
+        let temp = [];
+        let final_arr = [];
+        map.on('click', function (e) {
+            var coordinates = e.lngLat;
+            temp.push([coordinates.lat, coordinates.lng])
+            if (temp.length == 2) {
+                final_arr.push([temp]);
+                temp = [];
+            }
+            console.log(final_arr)
+        });
             
     </script>
 </body>

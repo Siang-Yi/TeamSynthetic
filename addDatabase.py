@@ -39,3 +39,14 @@ for i in range(30):
     coor = Coordinate(lat=lat, lng=lng, visitor=visitor)
     db.session.add(coor)
     db.session.commit()
+
+email = "user@a"
+name = "user"
+visitor = Visitor(email=email, firstName=name, lastName=name, username=name, password=name)
+db.session.add(visitor)
+db.session.commit()
+lat = 0.04903187849697588
+lng = 1.1742187500005343
+coor = Coordinate(lat=lat, lng=lng, visitor=visitor)
+db.session.add(coor)
+db.session.commit()

@@ -20,7 +20,7 @@ from mainPackage.visitor import visitor
 from mainPackage.admin import admin
 from mainPackage.staff import staff
 from mainPackage.tables import *
-from mainPackage.graph import ground_floor_graph, first_floor_graph, all_floor_locations_area
+from mainPackage.graph import *
 app.register_blueprint(loginSignup, url_prefix="/")
 app.register_blueprint(visitor, url_prefix="/visitor")
 app.register_blueprint(map, url_prefix="/map")
@@ -33,23 +33,32 @@ thread_user_position = Thread()
 thread_all_user_position = Thread()
 thread_stop_event = Event()
 
-# pointer = 0
-# def current_position():
-#     global pointer
-#     res = path[pointer]
-#     if pointer < len(path) - 1:
-#         pointer += 1
-#     return res
 
-# def set_position():
-#     while not thread_stop_event.isSet():
-#         coor = current_position()
-#         socketio.emit('coordinate', coor, namespace='/test')
-#         socketio.sleep(0.1)
+def set_position():
+    while not thread_stop_event.isSet():
+        user = Visitor.query.filter(Visitor.username=="user").first()
+        print("run")
+        user_coor = user.coordinate[0]
+        lng = user_coor.lng
+        lat = user_coor.lat
+        if 0 <= lng <= 2.25 and 0 <= lat <= 1.1:  # ground floor
+            ground_floor_graph.user_coor = [lng, lat]
+            first_floor_graph.user_coor = None
+        else:
+            first_floor_graph.user_coor = [lng, lat]
+            ground_floor_graph.user_coor = None
+
+        socketio.emit('coordinate', [lng, lat], namespace='/test')
+        print(lng, lat)
+        socketio.sleep(3)
 
 def set_all_position():
     while not thread_stop_event.isSet():
-        coordinates = Coordinate.query.all()
+        ground_floor_graph.add_edges(groud_floor_edges)
+        first_floor_graph.add_edges(first_floor_edges)
+        user = Visitor.query.filter(Visitor.username=="user").first()
+        user_id = user.id
+        coordinates = Coordinate.query.filter(Coordinate.visitor_id != user_id).all()
         coors = []
         all_vertices = ground_floor_graph.vertices + first_floor_graph.vertices
         for vertex in all_vertices:
@@ -71,7 +80,17 @@ def set_all_position():
                     min_vertex = ground_floor_graph.vertices[vertex_number]
                     in_room = True
                     break
-            
+
+            if in_room == False:
+                for key, item in all_floor_locations_area[1].items():
+                    top_left = item[0]
+                    bottom_right = item[1]
+                    if lat < top_left[0] and lat > bottom_right[0] and lng > top_left[1] and lng < bottom_right[1]:
+                        vertex_number = first_floor_graph.locations[1][key]
+                        min_vertex = first_floor_graph.vertices[vertex_number]
+                        in_room = True
+                        break
+                        
             if not in_room:
                 for vertex in all_vertices:
                     if vertex.in_room == False:
@@ -79,9 +98,18 @@ def set_all_position():
                         if dist < min_dist:
                             min_dist = dist
                             min_vertex = vertex
-                print(min_vertex.floor, min_vertex.id, min_vertex.coor, [lng, lat])
 
             min_vertex.ppl_count += 1
+            vertex_id = min_vertex.id
+            vertex_graph = min_vertex.floor
+            if vertex_graph == 0:
+                ground_floor_graph.add_people(vertex_id)
+            else:
+                first_floor_graph.add_people(vertex_id)
+
+        ground_floor_graph.floyd_warshall()
+        first_floor_graph.floyd_warshall()
+
         ppl_counts = []
         for vertex in all_vertices:
             ppl_counts.append(vertex.ppl_count)
@@ -91,7 +119,11 @@ def set_all_position():
                 for coor in pair:
                     area_arr.append([coor[1], coor[0]])
 
-        socketio.emit('all_coordinates', [coors, ppl_counts, area_arr], namespace='/test')
+        for pair in all_floor_locations_area[1].values():
+            for coor in pair:
+                area_arr.append([coor[1], coor[0]])
+
+        socketio.emit('all_coordinates', [coors, ppl_counts], namespace='/test')
         socketio.sleep(6)
 
 @socketio.on('connect', namespace='/test')
@@ -101,10 +133,10 @@ def test_connect():
     global thread_all_user_position
     # socketio.emit('connect', path, namespace='/test')
 
-    # if not thread_user_position.isAlive():
-    #     print("Starting Thread")
-    #     thread_user_position = socketio.start_background_task(set_position)
+    if not thread_user_position.isAlive():
+        print("Starting Thread User Pos")
+        thread_user_position = socketio.start_background_task(set_position)
 
     if not thread_all_user_position.isAlive():
-        print("Starting Thread")
+        print("Starting Thread All Pos")
         thread_all_user_position = socketio.start_background_task(set_all_position)

@@ -14,11 +14,11 @@ def home(ground_floor = [True], nodes=[[], []]):
         else:
             graph = first_floor_graph
 
-        vertices = graph.vertices
+        all_vertices = ground_floor_graph.vertices + first_floor_graph.vertices
 
         points = []  
         ppl_counts = []
-        for vertex in vertices:
+        for vertex in all_vertices:
             points.append(vertex.coor)
             ppl_counts.append(vertex.ppl_count)
 
@@ -33,10 +33,10 @@ def home(ground_floor = [True], nodes=[[], []]):
         else:
             graph = first_floor_graph
             current_floor = 1
-        vertices = graph.vertices
+        all_vertices = ground_floor_graph.vertices + first_floor_graph.vertices
         points = []
         ppl_counts = []
-        for vertex in vertices:
+        for vertex in all_vertices:
             points.append(vertex.coor)
             ppl_counts.append(vertex.ppl_count)
         location_names = graph.get_location_names()
@@ -50,13 +50,12 @@ def home(ground_floor = [True], nodes=[[], []]):
                 next_floor = 1
             else:
                 next_floor = 0
-            current = 3  # current loc
+            current = graph.user_nearest_node()  # current loc
             if same:
                 nodes[current_floor] = graph.path(current, vertex)
                 nodes[next_floor] = []
             else:
                 link_vertex, connect_link = graph.shortest_link(current, link)
-                print(link_vertex, connect_link)
                 nodes[current_floor] = all_graph[current_floor].path(current, link_vertex)
                 nodes[next_floor] = all_graph[next_floor].path(connect_link, vertex)
 
@@ -75,9 +74,9 @@ def home(ground_floor = [True], nodes=[[], []]):
                 ground_floor[0] = True
                 graph = ground_floor_graph
 
-            vertices = graph.vertices
+            all_vertices = ground_floor_graph.vertices + first_floor_graph.vertices
             points = []
-            for vertex in vertices:
+            for vertex in all_vertices:
                 points.append(vertex.coor)
             
             nodes_coor = []
