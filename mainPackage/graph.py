@@ -39,7 +39,7 @@ class Graph:
                         self.matrix[i][j][0] = self.matrix[i][k][0] + self.matrix[k][j][0]
                         self.matrix[i][j][1] = k
 
-    def shortest_link(self, current, vertices):
+    def shortest_link(self, current, vertices, next_floor_graph, next_floor_vertex):
         link_map = {0: 15,
                     15: 0,
                     67: 75,
@@ -49,7 +49,8 @@ class Graph:
         shortest_dist = inf
         shortest_vertex = None
         for vertex in vertices:
-            distance = self.matrix[current][vertex][0]
+            link_vertex = link_map[vertex]
+            distance = self.matrix[current][vertex][0] + next_floor_graph.matrix[link_vertex][next_floor_vertex][0]
             if distance < shortest_dist:
                 shortest_dist = distance
                 shortest_vertex = vertex
@@ -101,7 +102,7 @@ class Graph:
             u, v = edge.u, edge.v
             for v_edge in self.vertices[v].edges:
                 if v_edge.v == u:
-                    v_edge.w += 100
+                    v_edge.w += 10
 
     def user_nearest_node(self):
         in_room = False

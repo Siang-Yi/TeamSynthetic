@@ -55,7 +55,8 @@ def home(ground_floor = [True], nodes=[[], []]):
                 nodes[current_floor] = graph.path(current, vertex)
                 nodes[next_floor] = []
             else:
-                link_vertex, connect_link = graph.shortest_link(current, link)
+                next_floor_graph = all_graph[next_floor]
+                link_vertex, connect_link = graph.shortest_link(current, link, next_floor_graph, vertex)
                 nodes[current_floor] = all_graph[current_floor].path(current, link_vertex)
                 nodes[next_floor] = all_graph[next_floor].path(connect_link, vertex)
 
