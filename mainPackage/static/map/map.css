@@ -71,6 +71,15 @@
 .floorLabel {
     margin-top: 15px;
 }
+
+#helpButton{
+    background-color:#ff9000;
+    position: fixed;
+    bottom:20px;
+    right: 20px;
+    cursor: pointer;
+    z-index: 999999;
+  }
 /*---------------------------------------------------------------*/
 body {
     margin: 0;

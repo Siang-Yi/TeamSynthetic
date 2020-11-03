@@ -41,21 +41,13 @@
         <span class="android-mobile-title mdl-layout-title">
             <h4 class="phoneTitle">Map</h4>
         </span>
-        <button class="android-more-button mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect" id="more-button">
-            <i class="material-icons">more_vert</i>
-        </button>
-        <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="more-button">
-            <li class="mdl-menu__item">5.0 Lollipop</li>
-            <li class="mdl-menu__item">4.4 KitKat</li>
-            <li disabled class="mdl-menu__item">4.3 Jelly Bean</li>
-            <li class="mdl-menu__item">Android History</li>
-        </ul>
+
         </div>
     </div>
 
     <div class="android-drawer mdl-layout__drawer">
         <span class="mdl-layout-title">
-        
+
         </span>
         <form action="" method="post" id="searchForm">
             <div class="mdl-textfield mdl-js-textfield">
@@ -94,6 +86,9 @@
                 {% endif %}
             </button>
         </form>
+        <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" id="helpButton">
+            <i class="material-icons">directions_run</i>
+        </button>
     </div>
 
     <script>
@@ -139,12 +134,16 @@
                     place_lst[i].setPopup(new mapboxgl.Popup().setHTML("<p>" + ppl_counts[i] + "</p>"))
                 }
             });
-
+            
+            last_marker = null
             socket.on('coordinate', function(coor) {
-                console.log("chg")
+                if (last_marker != null) {
+                    last_marker.remove()
+                }
                 let marker = new mapboxgl.Marker({color: "#8A2BE2"})
                 marker.setLngLat(coor);
                 marker.addTo(map);
+                last_marker = marker
             });
         });
 

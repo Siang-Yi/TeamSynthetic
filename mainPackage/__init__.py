@@ -10,8 +10,9 @@ from math import inf, sqrt
 app = Flask(__name__)
 app.secret_key = "hello"
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://sql12368780:cYKqlW55kh@sql12.freemysqlhosting.net/sql12368780' later change to this
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db?check_same_thread=False'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
+
 socketio = SocketIO(app)
 
 from mainPackage.map import map
@@ -33,10 +34,22 @@ thread_user_position = Thread()
 thread_all_user_position = Thread()
 thread_stop_event = Event()
 
+print("helloWorld")
+user = Visitor.query.filter(Visitor.username=="user").first()
+if user is not None:
+    lat = 0.04903187849697588
+    lng = 1.1742187500005343
+    coor = user.coordinate[0]
+    coor.lat = lat
+    coor.lng = lng
+    user.coor = coor
+    db.session.add(user)
+    db.session.commit()
 
 def set_position():
     while not thread_stop_event.isSet():
         print("run")
+        db.session.remove()
         user = Visitor.query.filter(Visitor.username=="user").first()
         user_coor = user.coordinate[0]
         lng = user_coor.lng
