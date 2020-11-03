@@ -63,6 +63,10 @@ a:hover{
   background-color: #38d39f;
 }
 
+.mdl-textfield__label {
+  color: rgb(0, 0, 0);
+}
+
 .btn{
 	display: block;
 	border-radius: 25px;
