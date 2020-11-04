@@ -200,7 +200,7 @@ form{
 }
 
 #signupBtn:hover, #forgotPwBtn:hover{
-	color: #38d39f;
+	color: #19b5b1;
 }
 
 .btn{
@@ -224,6 +224,14 @@ form{
 	background-position: right;
 }
 
+#role {
+  font-size: 20px;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: black;
+  opacity: 1; /* Firefox */
+}
 
 @media screen and (max-width: 1050px){
 	.container{
