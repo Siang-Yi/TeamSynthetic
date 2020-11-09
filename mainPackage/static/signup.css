@@ -2,7 +2,8 @@
   padding-top: 3%;
   text-align: center;
   color: #333333;
-  font-family: 'Poppins', sans-serif
+  font-family: 'Poppins', sans-serif;
+  font-size: 3em;
 }
 
 .mdl-card {
@@ -56,11 +57,11 @@ a{
 }
 
 a:hover{
-	color: #38d39f;
+	color: #19b5b1;
 }
 
 .mdl-textfield__label:after{
-  background-color: #38d39f;
+  background-color: #19b5b1;
 }
 
 .mdl-textfield__label {
