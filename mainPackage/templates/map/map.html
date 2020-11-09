@@ -39,7 +39,10 @@
         
         <!-- Navigation -->
         <span class="android-mobile-title mdl-layout-title">
-            <h4 class="phoneTitle">Map</h4>
+            <div>
+                <img src="/static/map/logo_no_bg.png" class="logo">
+                <h4 class="phoneTitle">Map</h4>
+            </div>
         </span>
 
         </div>
@@ -47,7 +50,7 @@
 
     <div class="android-drawer mdl-layout__drawer">
         <span class="mdl-layout-title">
-
+            <img src="/static/map/logo_no_bg.png" class="menuLogo">
         </span>
         <form action="" method="post" id="searchForm">
             <div class="mdl-textfield mdl-js-textfield">
@@ -60,12 +63,12 @@
         </form>
         <form method="POST" id="locationSelectForm">
         <nav class="mdl-navigation">
-            <span class="mdl-navigation__link" href="">Ground Floor</span>
+            <span class="mdl-navigation__link menuFloorLabel" href="">Ground Floor</span>
             {% for name in location_names[0]%}
                 <button class="mdl-navigation__link" href="" type="submit" name="location" value="{{name}}">{{name}}</button>
                 <div class="android-drawer-separator"></div>
             {% endfor %}
-            <span class="mdl-navigation__link" href="">First Floor</span>
+            <span class="mdl-navigation__link menuFloorLabel" href="">First Floor</span>
             {% for name in location_names[1]%}
             <button class="mdl-navigation__link" href="" type="submit" name="location" value="{{name}}">{{name}}</button>
             <div class="android-drawer-separator"></div>
@@ -80,9 +83,9 @@
         <form method="POST" id="floorForm">
             <button id="changeFloor" type="submit" name="floor" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
                 {% if ground_floor %}
-                    <h5 class="floorLabel">FF</h5>
-                {% else%}
                     <h5 class="floorLabel">GF</h5>
+                {% else%}
+                    <h5 class="floorLabel">FF</h5>
                 {% endif %}
             </button>
         </form>
